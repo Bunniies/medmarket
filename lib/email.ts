@@ -1,7 +1,11 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "MedMarket <onboarding@resend.dev>";
+
+function getResend() {
+  if (!process.env.RESEND_API_KEY) return null;
+  return new Resend(process.env.RESEND_API_KEY);
+}
 const BASE_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
 // ─── Order placed ─────────────────────────────────────────────────────────────
@@ -28,6 +32,8 @@ export async function sendOrderNotification(params: OrderNotificationParams) {
   const link = `${BASE_URL}/en/my-listings`;
 
   try {
+    const resend = getResend();
+    if (!resend) return;
     await resend.emails.send({
       from: FROM,
       to: sellerEmail,
@@ -77,6 +83,8 @@ export async function sendInvitationEmail(params: InvitationEmailParams) {
   const link = `${BASE_URL}/en/register?token=${token}`;
 
   try {
+    const resend = getResend();
+    if (!resend) return;
     await resend.emails.send({
       from: FROM,
       to: recipientEmail,
@@ -126,6 +134,8 @@ export async function sendMessageNotification(params: MessageNotificationParams)
   const preview = messagePreview.length > 200 ? messagePreview.slice(0, 200) + "…" : messagePreview;
 
   try {
+    const resend = getResend();
+    if (!resend) return;
     await resend.emails.send({
       from: FROM,
       to: recipientEmail,
