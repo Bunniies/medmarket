@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { ListingCard } from "@/components/listings/ListingCard";
 import { db } from "@/lib/db";
@@ -113,7 +113,7 @@ export default async function ListingsPage({ params, searchParams }: ListingsPag
   const resolvedSearchParams = await searchParams;
 
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user) redirect(`/${locale}/login`);
 
   // Get user's hospital location (needed for distance filter)
   const hospitalId = (session?.user as any)?.hospitalId as string | undefined;

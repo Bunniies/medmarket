@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,7 +9,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
@@ -40,6 +40,50 @@ export default function LoginPage() {
   }
 
   return (
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-xl border border-border bg-white p-8 shadow-sm"
+    >
+      {error && (
+        <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4">
+        <Input
+          id="email"
+          label={t("labelEmail")}
+          type="email"
+          placeholder={t("placeholderEmail")}
+          autoComplete="email"
+          value={form.email}
+          onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+          required
+        />
+        <Input
+          id="password"
+          label={t("labelPassword")}
+          type="password"
+          placeholder="••••••••"
+          autoComplete="current-password"
+          value={form.password}
+          onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+          required
+        />
+      </div>
+
+      <Button type="submit" className="mt-6 w-full" isLoading={loading}>
+        {t("submitButton")}
+      </Button>
+    </form>
+  );
+}
+
+export default function LoginPage() {
+  const t = useTranslations("login");
+
+  return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-2">
@@ -55,43 +99,9 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-xl border border-border bg-white p-8 shadow-sm"
-        >
-          {error && (
-            <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
-          <div className="flex flex-col gap-4">
-            <Input
-              id="email"
-              label={t("labelEmail")}
-              type="email"
-              placeholder={t("placeholderEmail")}
-              autoComplete="email"
-              value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              required
-            />
-            <Input
-              id="password"
-              label={t("labelPassword")}
-              type="password"
-              placeholder="••••••••"
-              autoComplete="current-password"
-              value={form.password}
-              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              required
-            />
-          </div>
-
-          <Button type="submit" className="mt-6 w-full" isLoading={loading}>
-            {t("submitButton")}
-          </Button>
-        </form>
+        <Suspense fallback={<div className="rounded-xl border border-border bg-white p-8 shadow-sm" />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

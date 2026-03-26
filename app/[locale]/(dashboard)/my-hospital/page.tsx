@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { Navbar } from "@/components/layout/Navbar";
@@ -14,7 +14,7 @@ export default async function MyHospitalPage({ params }: { params: Promise<{ loc
   setRequestLocale(locale);
 
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user) redirect(`/${locale}/login`);
 
   const role = (session.user as any).role;
   if (role !== "HOSPITAL_ADMIN" && role !== "PLATFORM_ADMIN") notFound();

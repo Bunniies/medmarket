@@ -56,7 +56,7 @@ export default async function DashboardPage({
   const stats = [
     { label: t("activeListings"), value: myListings.filter((l) => l.status === "ACTIVE").length, icon: Package },
     { label: t("ordersPlaced"), value: myOrders.length, icon: ShoppingCart },
-    { label: t("totalEarnings"), value: formatPrice(totalEarnings._sum.totalPrice ?? 0), icon: TrendingUp },
+    { label: t("totalEarnings"), value: formatPrice(Number(totalEarnings._sum.totalPrice ?? 0)), icon: TrendingUp },
   ];
 
   return (
@@ -131,7 +131,7 @@ export default async function DashboardPage({
                       <td className="px-6 py-3 text-muted-foreground">
                         {listing.quantity} {listing.unit}
                       </td>
-                      <td className="px-6 py-3">{formatPrice(listing.pricePerUnit, listing.currency)}</td>
+                      <td className="px-6 py-3">{formatPrice(Number(listing.pricePerUnit), listing.currency)}</td>
                       <td className="px-6 py-3 text-muted-foreground">{formatDate(listing.expiryDate)}</td>
                       <td className="px-6 py-3">
                         <span
@@ -191,7 +191,7 @@ export default async function DashboardPage({
                       <td className="px-6 py-3 text-muted-foreground">
                         {order.quantity} {order.listing.unit}
                       </td>
-                      <td className="px-6 py-3">{formatPrice(order.totalPrice, order.currency)}</td>
+                      <td className="px-6 py-3">{formatPrice(Number(order.totalPrice), order.currency)}</td>
                       <td className="px-6 py-3">
                         <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                           {order.status}

@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { Navbar } from "@/components/layout/Navbar";
 import { NewListingForm } from "@/components/listings/NewListingForm";
@@ -24,7 +24,7 @@ export default async function NewListingPage({
   setRequestLocale(locale);
 
   const session = await auth();
-  if (!session) redirect("/login");
+  if (!session) redirect(`/${locale}/login`);
 
   const t = await getTranslations("newListing");
   const categories = await db.category.findMany({ orderBy: { name: "asc" } });

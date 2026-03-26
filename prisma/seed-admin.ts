@@ -15,10 +15,10 @@ const prisma = new PrismaClient();
 
 const ADMIN_EMAIL    = "alessandroconigli@gmail.com";  // ← change before running
 const ADMIN_NAME     = "Platform Admin";        // ← change if desired
-const ADMIN_PASSWORD = "MedMarkAleFranci1994!"; // ← MUST change before running
+const ADMIN_PASSWORD = "change-me-before-running"; // ← MUST change before running
 
 async function main() {
-  if (ADMIN_PASSWORD === "change-me-before-running") {
+  if ((ADMIN_PASSWORD as string) === "change-me-before-running") {
     console.error("❌  Set a real password in seed-admin.ts before running.");
     process.exit(1);
   }
