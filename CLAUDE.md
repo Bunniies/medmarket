@@ -169,6 +169,7 @@ prisma/
 - **Invite flow**: `POST /api/invitations` creates a token + sends email. `/register?token=xxx` pre-fills email, hides hospital fields, joins the existing hospital. Token validated server-side; accepted token → user created as HOSPITAL_STAFF.
 - **Hospital rejection**: deletes the hospital and cascades to its users. Use with care.
 - **User deactivation**: sets `active = false` on User; checked in `auth.ts` `authorize()` — deactivated users cannot log in. PLATFORM_ADMIN accounts cannot be deactivated.
+- **PLATFORM_ADMIN redirects**: `/dashboard` redirects to `/admin` for PLATFORM_ADMIN (hospitalId is null, so hospital-scoped queries would fail). Apply the same pattern to any page that queries by hospitalId. **Important**: use `redirect` from `next/navigation` (not `@/i18n/navigation`) with an explicit locale-prefixed path — e.g. `redirect(\`/\${locale}/admin\`)` — because the i18n redirect can fail to infer the locale in this context and produce a localeless URL that matches no route.
 - **Admin audit log**: every admin action writes an `AdminLog` record. `targetName` is denormalized so the log remains readable even after the target is deleted (e.g. rejected hospitals).
 - **Email**: all send functions in `lib/email.ts` are fire-and-forget (try/catch, never block the main request).
 - **Root layout**: `app/layout.tsx` must render `<html><body>{children}</body></html>` — Next.js requires this even though `[locale]/layout.tsx` is the real layout.
@@ -201,7 +202,7 @@ prisma/
   - Listing moderation: all listings platform-wide, remove (archive) any listing
   - User management: all hospital users, deactivate/reactivate (blocks login)
   - Audit log: every admin action recorded with target, actor, timestamp
-- **Static pages**: `/privacy`, `/terms`, `/contact`
+- **Static pages**: `/privacy`, `/terms`, `/contact`, `/guide` (bilingual user guide with role cards, step-by-step sections, tips; linked from Navbar)
 - i18n: English and Italian, with locale switcher in the navbar
 
 ## What's missing / next priorities
@@ -209,7 +210,7 @@ prisma/
 1. **Image uploads** for listings — Vercel Blob is the simplest integration
 2. **Seed fix** — demo hospitals are created `verified: false`; update seed to set `verified: true` or add a PLATFORM_ADMIN seed account
 3. **Real-time chat** — upgrade from 4s polling to SSE
-4. **PLATFORM_ADMIN experience** — profile/orders/listings pages are irrelevant for platform admins; add guards/redirects so admins land on `/admin` instead
+4. **PLATFORM_ADMIN experience** — `/dashboard` already redirects to `/admin`; profile/orders/my-listings pages still need guards to redirect platform admins away
 
 ## Domain notes
 

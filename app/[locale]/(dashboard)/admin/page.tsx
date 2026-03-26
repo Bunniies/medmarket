@@ -44,6 +44,8 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
     allOrders,
     allHospitals,
     recentHospitals,
+    recentUsers,
+    usersByHospital,
   ] = await Promise.all([
     db.hospital.count(),
     db.hospital.count({ where: { verified: true } }),
@@ -57,6 +59,15 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
     db.hospital.findMany({
       where: { createdAt: { gte: sixMonthsAgo } },
       select: { createdAt: true },
+    }),
+    db.user.findMany({
+      where: { createdAt: { gte: sixMonthsAgo }, role: { not: "PLATFORM_ADMIN" } },
+      select: { createdAt: true },
+    }),
+    db.user.groupBy({
+      by: ["hospitalId"],
+      where: { role: { not: "PLATFORM_ADMIN" }, hospitalId: { not: null } },
+      _count: { id: true },
     }),
   ]);
 
@@ -93,8 +104,19 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
     return {
       month: label,
       hospitals: recentHospitals.filter((h) => h.createdAt >= d && h.createdAt < nextMonth).length,
+      users: recentUsers.filter((u) => u.createdAt >= d && u.createdAt < nextMonth).length,
     };
   });
+
+  // Users per hospital (top 10 by user count)
+  const hospitalMapAll = Object.fromEntries(
+    [...allHospitals].map((h) => [h.id, h.name])
+  );
+  const usersPerHospital = usersByHospital
+    .filter((g) => g.hospitalId !== null)
+    .map((g) => ({ name: hospitalMapAll[g.hospitalId!] ?? "Unknown", users: g._count.id }))
+    .sort((a, b) => b.users - a.users)
+    .slice(0, 10);
 
   // Order status breakdown
   const statusCounts: Record<string, number> = {};
@@ -118,7 +140,7 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
     .sort((a, b) => b.orders - a.orders)
     .slice(0, 5);
 
-  const chartsData: AdminChartsData = { monthlyOrders, monthlyHospitals, orderStatusBreakdown, topHospitals };
+  const chartsData: AdminChartsData = { monthlyOrders, monthlyHospitals, orderStatusBreakdown, topHospitals, usersPerHospital };
 
   const statCards = [
     {

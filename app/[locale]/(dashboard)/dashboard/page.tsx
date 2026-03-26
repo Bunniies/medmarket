@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { Navbar } from "@/components/layout/Navbar";
@@ -26,8 +26,8 @@ export default async function DashboardPage({
   setRequestLocale(locale);
 
   const session = await auth();
-  if (!session?.user) redirect("/login");
-  if ((session.user as any).role === "PLATFORM_ADMIN") redirect("/admin");
+  if (!session?.user) redirect(`/${locale}/login`);
+  if ((session.user as any).role === "PLATFORM_ADMIN") redirect(`/${locale}/admin`);
 
   const t = await getTranslations("dashboard");
 
