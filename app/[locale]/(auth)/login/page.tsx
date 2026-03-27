@@ -13,6 +13,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+  const wasReset = searchParams.get("reset") === "1";
   const t = useTranslations("login");
 
   const [form, setForm] = useState({ email: "", password: "" });
@@ -44,6 +45,11 @@ function LoginForm() {
       onSubmit={handleSubmit}
       className="rounded-xl border border-border bg-white p-8 shadow-sm"
     >
+      {wasReset && (
+        <div className="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+          {t("passwordResetSuccess")}
+        </div>
+      )}
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
@@ -76,6 +82,12 @@ function LoginForm() {
       <Button type="submit" className="mt-6 w-full" isLoading={loading}>
         {t("submitButton")}
       </Button>
+
+      <p className="mt-4 text-center text-sm text-muted-foreground">
+        <Link href="/forgot-password" className="text-brand-600 hover:underline">
+          {t("forgotPassword")}
+        </Link>
+      </p>
     </form>
   );
 }

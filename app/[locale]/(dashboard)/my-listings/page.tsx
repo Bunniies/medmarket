@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { MyListingsManager } from "@/components/listings/MyListingsManager";
 import type { ListingRow } from "@/components/listings/MyListingsManager";
 import { PlusCircle } from "lucide-react";
@@ -77,33 +76,29 @@ export default async function MyListingsPage({ params }: { params: Promise<{ loc
   }));
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+  <div className="mb-8 flex items-center justify-between">
+    <h1 className="text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
+    <Link
+      href="/listings/new"
+      className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
+    >
+      <PlusCircle className="h-4 w-4" />
+      New listing
+    </Link>
+  </div>
 
-      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
-          <Link
-            href="/listings/new"
-            className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
-          >
-            <PlusCircle className="h-4 w-4" />
-            New listing
-          </Link>
-        </div>
-
-        {serialized.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-20 text-center text-muted-foreground">
-            <p className="text-lg font-medium">{t("noListings")}</p>
-            <p className="text-sm">{t("noListingsHint")}</p>
-            <Link href="/listings/new" className="mt-4 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700">
-              {t("createListing")}
-            </Link>
-          </div>
-        ) : (
-          <MyListingsManager listings={serialized} />
-        )}
-      </main>
+  {serialized.length === 0 ? (
+    <div className="flex flex-col items-center gap-2 py-20 text-center text-muted-foreground">
+      <p className="text-lg font-medium">{t("noListings")}</p>
+      <p className="text-sm">{t("noListingsHint")}</p>
+      <Link href="/listings/new" className="mt-4 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700">
+        {t("createListing")}
+      </Link>
     </div>
+  ) : (
+    <MyListingsManager listings={serialized} />
+  )}
+</main>
   );
 }

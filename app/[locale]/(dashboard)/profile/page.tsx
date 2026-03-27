@@ -3,7 +3,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Building2 } from "lucide-react";
@@ -114,68 +113,64 @@ export default async function ProfilePage({
   };
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+  <h1 className="mb-8 text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
 
-      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <h1 className="mb-8 text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
-
-        {/* ── Info cards ── */}
-        <div className="mb-10 grid gap-5 sm:grid-cols-2">
-          <div className="rounded-xl border border-border bg-white p-6">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 text-brand-700 text-lg font-bold">
-                {(user.name ?? user.email ?? "?")[0].toUpperCase()}
-              </div>
-              <div>
-                <p className="font-semibold text-gray-900">{user.name ?? "—"}</p>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
-              </div>
-            </div>
-            <dl className="flex flex-col gap-2 text-sm">
-              <InfoRow label={t("labelRole")} value={roleLabel[user.role] ?? user.role} />
-              <InfoRow label={t("labelMemberSince")} value={formatDate(user.createdAt)} />
-            </dl>
-          </div>
-
-          {user.hospital && (
-            <div className="rounded-xl border border-border bg-white p-6">
-              <div className="mb-4 flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-brand-600" />
-                <p className="font-semibold text-gray-900">{user.hospital.name}</p>
-                <span
-                  className={cn(
-                    "ml-auto rounded-full px-2.5 py-0.5 text-xs font-medium",
-                    user.hospital.verified
-                      ? "bg-accent-50 text-accent-700"
-                      : "bg-amber-50 text-amber-700"
-                  )}
-                >
-                  {user.hospital.verified ? t("hospitalVerified") : t("hospitalUnverified")}
-                </span>
-              </div>
-              <dl className="flex flex-col gap-2 text-sm">
-                <InfoRow label={t("labelCity")} value={user.hospital.city} />
-                <InfoRow label={t("labelCountry")} value={user.hospital.country} />
-              </dl>
-            </div>
-          )}
+  {/* ── Info cards ── */}
+  <div className="mb-10 grid gap-5 sm:grid-cols-2">
+    <div className="rounded-xl border border-border bg-white p-6">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 text-brand-700 text-lg font-bold">
+          {(user.name ?? user.email ?? "?")[0].toUpperCase()}
         </div>
-
-        {/* ── Notification settings ── */}
-        <div className="mb-10">
-          <NotificationSettings emailNotifyMessages={user.emailNotifyMessages} />
+        <div>
+          <p className="font-semibold text-gray-900">{user.name ?? "—"}</p>
+          <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
-
-        {/* ── Analytics + orders (client, toggle-driven) ── */}
-        <ProfileAnalytics
-          ordersAsBuyer={ordersAsBuyer}
-          ordersAsSeller={ordersAsSeller}
-          buyerOrdersForTable={buyerOrdersForTable}
-          sellerOrdersForTable={sellerOrdersForTable}
-        />
-      </main>
+      </div>
+      <dl className="flex flex-col gap-2 text-sm">
+        <InfoRow label={t("labelRole")} value={roleLabel[user.role] ?? user.role} />
+        <InfoRow label={t("labelMemberSince")} value={formatDate(user.createdAt)} />
+      </dl>
     </div>
+
+    {user.hospital && (
+      <div className="rounded-xl border border-border bg-white p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <Building2 className="h-5 w-5 text-brand-600" />
+          <p className="font-semibold text-gray-900">{user.hospital.name}</p>
+          <span
+            className={cn(
+              "ml-auto rounded-full px-2.5 py-0.5 text-xs font-medium",
+              user.hospital.verified
+                ? "bg-accent-50 text-accent-700"
+                : "bg-amber-50 text-amber-700"
+            )}
+          >
+            {user.hospital.verified ? t("hospitalVerified") : t("hospitalUnverified")}
+          </span>
+        </div>
+        <dl className="flex flex-col gap-2 text-sm">
+          <InfoRow label={t("labelCity")} value={user.hospital.city} />
+          <InfoRow label={t("labelCountry")} value={user.hospital.country} />
+        </dl>
+      </div>
+    )}
+  </div>
+
+  {/* ── Notification settings ── */}
+  <div className="mb-10">
+    <NotificationSettings emailNotifyMessages={user.emailNotifyMessages} />
+  </div>
+
+  {/* ── Analytics + orders (client, toggle-driven) ── */}
+  <ProfileAnalytics
+    ordersAsBuyer={ordersAsBuyer}
+    ordersAsSeller={ordersAsSeller}
+    buyerOrdersForTable={buyerOrdersForTable}
+    sellerOrdersForTable={sellerOrdersForTable}
+  />
+</main>
   );
 }
 

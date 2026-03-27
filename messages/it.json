@@ -56,7 +56,8 @@
     "myOrders": "I miei ordini",
     "myListings": "I miei annunci",
     "messages": "Messaggi",
-    "profile": "Profilo"
+    "profile": "Profilo",
+    "alerts": "Alert"
   },
   "listings": {
     "pageTitle": "Sfoglia gli annunci",
@@ -130,7 +131,10 @@
     "descriptionPlaceholder": "Note aggiuntive, condizioni di conservazione, documentazione disponibile, ecc.",
     "submitButton": "Pubblica annuncio",
     "errorFallback": "Creazione annuncio fallita.",
-    "metaTitle": "Nuovo Annuncio"
+    "metaTitle": "Nuovo Annuncio",
+    "disclaimerTitle": "Responsabilità del venditore",
+    "disclaimerBody": "Pubblicando questo annuncio, confermi che il farmaco è stato conservato nel pieno rispetto delle condizioni richieste (temperatura, umidità, esposizione alla luce e qualsiasi altro requisito applicabile), e che la spedizione sarà organizzata in modo da preservare tali condizioni per tutta la durata del trasporto. MedMarket agisce esclusivamente come marketplace e non si assume alcuna responsabilità per la qualità, la conservazione o il trasporto dei farmaci presenti sulla piattaforma. La piena responsabilità legale e normativa rimane in capo all'istituzione venditrice.",
+    "disclaimerCheckbox": "Confermo e accetto la piena responsabilità per la corretta conservazione e spedizione di questo farmaco."
   },
   "myListings": {
     "metaTitle": "I miei annunci",
@@ -282,7 +286,9 @@
     "labelPassword": "Password",
     "submitButton": "Accedi",
     "invalidCredentials": "Email o password non validi. Riprova.",
-    "metaTitle": "Accedi"
+    "metaTitle": "Accedi",
+    "forgotPassword": "Password dimenticata?",
+    "passwordResetSuccess": "Password aggiornata con successo. Puoi ora accedere con la nuova password."
   },
   "register": {
     "title": "Registra il tuo ospedale",
@@ -310,5 +316,61 @@
     "submitButton": "Crea account",
     "errorFallback": "Registrazione fallita. Riprova.",
     "metaTitle": "Registrazione"
+  },
+  "forgotPassword": {
+    "title": "Password dimenticata?",
+    "description": "Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password.",
+    "rememberPassword": "Ricordi la password?",
+    "signInLink": "Accedi",
+    "labelEmail": "Indirizzo email",
+    "placeholderEmail": "tu@ospedale.it",
+    "submitButton": "Invia link di reset",
+    "successTitle": "Controlla la tua email",
+    "successMessage": "Se esiste un account con quell'indirizzo email, riceverai a breve un link di reset. Scade tra 1 ora.",
+    "errorFallback": "Qualcosa è andato storto. Riprova."
+  },
+  "resetPassword": {
+    "title": "Imposta una nuova password",
+    "rememberPassword": "Ricordi la password?",
+    "signInLink": "Accedi",
+    "labelPassword": "Nuova password",
+    "labelConfirm": "Conferma nuova password",
+    "submitButton": "Reimposta password",
+    "errorMismatch": "Le password non corrispondono.",
+    "errorInvalidLink": "Questo link di reset non è valido. Richiedine uno nuovo.",
+    "errorFallback": "Qualcosa è andato storto. Riprova."
+  },
+  "alerts": {
+    "title": "Alert medicinali",
+    "newAlert": "Nuovo alert",
+    "labelMedicineName": "Nome del farmaco",
+    "placeholderMedicineName": "es. Amoxicillina",
+    "labelAtcCode": "Codice ATC (opzionale)",
+    "placeholderAtcCode": "es. J01CA04",
+    "labelDistance": "Distanza massima",
+    "submitButton": "Crea alert",
+    "activeAlerts": "I tuoi alert attivi",
+    "loading": "Caricamento…",
+    "empty": "Nessun alert attivo. Creane uno qui sopra per essere avvisato quando un farmaco che cerchi diventa disponibile.",
+    "withinKm": "Entro {km} km",
+    "anyDistance": "Qualsiasi distanza",
+    "deleteAlert": "Elimina alert",
+    "errorCreate": "Impossibile creare l'alert. Riprova."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "browseListings": "Annunci",
+    "newListing": "Nuovo annuncio",
+    "myListings": "I miei annunci",
+    "myOrders": "I miei ordini",
+    "messages": "Messaggi",
+    "alerts": "Alert",
+    "profile": "Profilo",
+    "myHospital": "Il mio ospedale",
+    "adminDashboard": "Dashboard",
+    "adminHospitals": "Ospedali",
+    "adminListings": "Annunci",
+    "adminUsers": "Utenti",
+    "adminLogs": "Log audit"
   }
 }

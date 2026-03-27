@@ -19,7 +19,6 @@ export interface ListingForEdit {
   quantity: number;
   unit: string;
   pricePerUnit: number;
-  condition: string;
   categoryId: string | null;
   description: string | null;
 }
@@ -35,7 +34,16 @@ export function NewListingForm({ categories, listing }: NewListingFormProps) {
   const tMy = useTranslations("myListings");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [medicineName, setMedicineName] = useState(listing?.medicineName ?? "");
+  const [expiryDate, setExpiryDate] = useState(listing?.expiryDate ?? "");
   const isEdit = !!listing;
+
+  const canSubmit = isEdit || (
+    disclaimerAccepted &&
+    medicineName.trim().length >= 2 &&
+    expiryDate.length > 0
+  );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -81,7 +89,7 @@ export function NewListingForm({ categories, listing }: NewListingFormProps) {
         <div className="flex flex-col gap-4">
           <Input id="title" name="title" label={t("labelTitle")} placeholder="Trastuzumab 440mg — 10 vials available" required defaultValue={listing?.title} />
           <div className="grid grid-cols-2 gap-4">
-            <Input id="medicineName" name="medicineName" label={t("labelMedicineName")} placeholder="Trastuzumab" required defaultValue={listing?.medicineName} />
+            <Input id="medicineName" name="medicineName" label={t("labelMedicineName")} placeholder="Trastuzumab" required value={medicineName} onChange={(e) => setMedicineName(e.target.value)} />
             <Input id="genericName" name="genericName" label={t("labelGenericName")} placeholder="Trastuzumab" defaultValue={listing?.genericName ?? ""} />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -122,26 +130,10 @@ export function NewListingForm({ categories, listing }: NewListingFormProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Input id="pricePerUnit" name="pricePerUnit" label={t("labelPrice")} type="number" step="0.01" min={0} placeholder="850.00" required defaultValue={listing?.pricePerUnit} />
-            <Input id="expiryDate" name="expiryDate" label={t("labelExpiryDate")} type="date" required defaultValue={listing?.expiryDate} />
+            <Input id="expiryDate" name="expiryDate" label={t("labelExpiryDate")} type="date" required value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-gray-700">{t("labelCondition")}</label>
-            <div className="flex gap-4">
-              {(["SEALED", "OPENED"] as const).map((val) => (
-                <label key={val} className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="radio"
-                    name="condition"
-                    value={val}
-                    defaultChecked={listing ? listing.condition === val : val === "SEALED"}
-                    className="accent-brand-600"
-                  />
-                  {val === "SEALED" ? t("conditionSealed") : t("conditionOpened")}
-                </label>
-              ))}
-            </div>
-          </div>
+          <input type="hidden" name="condition" value="SEALED" />
         </div>
       </section>
 
@@ -159,7 +151,29 @@ export function NewListingForm({ categories, listing }: NewListingFormProps) {
         />
       </section>
 
-      <Button type="submit" isLoading={loading} size="lg">
+      {!isEdit && (
+        <section className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-amber-700">
+            {t("disclaimerTitle")}
+          </p>
+          <p className="text-sm text-amber-900 leading-relaxed">
+            {t("disclaimerBody")}
+          </p>
+          <label className="mt-4 flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={disclaimerAccepted}
+              onChange={(e) => setDisclaimerAccepted(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-amber-600"
+            />
+            <span className="text-sm font-medium text-amber-900">
+              {t("disclaimerCheckbox")}
+            </span>
+          </label>
+        </section>
+      )}
+
+      <Button type="submit" isLoading={loading} size="lg" disabled={!canSubmit}>
         {isEdit ? tMy("saveChanges") : t("submitButton")}
       </Button>
     </form>

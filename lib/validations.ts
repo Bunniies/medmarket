@@ -30,7 +30,7 @@ export const createListingSchema = z.object({
   unit: z.string().min(1, "Unit is required"),
   pricePerUnit: z.number().positive("Price must be positive"),
   currency: z.string().default("EUR"),
-  condition: z.enum(["SEALED", "OPENED"]),
+  condition: z.enum(["SEALED", "OPENED"]).default("SEALED"),
   categoryId: z.string().optional(),
 });
 
@@ -45,6 +45,21 @@ export const inviteRegisterSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   token: z.string().min(1, "Invitation token is required"),
+});
+
+export const createAlertSchema = z.object({
+  medicineName: z.string().min(2, "Medicine name must be at least 2 characters"),
+  atcCode: z.string().optional(),
+  maxDistanceKm: z.number().int().positive().optional().nullable(),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

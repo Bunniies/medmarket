@@ -4,6 +4,24 @@ import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/Button";
+import { db } from "@/lib/db";
+
+// Thresholds above which a "+" is appended
+const THRESHOLD_HOSPITALS = 500;
+const THRESHOLD_LISTINGS  = 500;
+const THRESHOLD_SAVED_EUR = 10_000_000;
+
+function formatCount(n: number, threshold: number): string {
+  return n >= threshold ? `${n}+` : `${n}`;
+}
+
+function formatEur(n: number, threshold: number): string {
+  let display: string;
+  if (n >= 1_000_000) display = `€${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  else if (n >= 1_000)  display = `€${Math.round(n / 1_000)}K`;
+  else                  display = `€${n}`;
+  return n >= threshold ? `${display}+` : display;
+}
 
 export default async function HomePage({
   params,
@@ -13,10 +31,27 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <HomePageContent />;
+  const [hospitalCount, activeListingCount, orderAgg] = await Promise.all([
+    db.hospital.count({ where: { verified: true } }),
+    db.listing.count({ where: { status: "ACTIVE" } }),
+    db.order.aggregate({
+      where: { status: { not: "CANCELLED" } },
+      _sum: { totalPrice: true },
+    }),
+  ]);
+
+  const totalSavedEur = Number(orderAgg._sum.totalPrice ?? 0);
+
+  const stats = {
+    hospitals: formatCount(hospitalCount, THRESHOLD_HOSPITALS),
+    listings:  formatCount(activeListingCount, THRESHOLD_LISTINGS),
+    saved:     formatEur(totalSavedEur, THRESHOLD_SAVED_EUR),
+  };
+
+  return <HomePageContent stats={stats} />;
 }
 
-function HomePageContent() {
+function HomePageContent({ stats }: { stats: { hospitals: string; listings: string; saved: string } }) {
   const t = useTranslations("home");
   const tCommon = useTranslations("common");
 
@@ -67,9 +102,9 @@ function HomePageContent() {
       <section className="border-b border-border bg-secondary/30">
         <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0 px-4 sm:px-6 lg:px-8">
           {[
-            { value: "200+", label: t("statsHospitals") },
-            { value: "€2M+", label: t("statsSaved") },
-            { value: "500+", label: t("statsListings") },
+            { value: stats.hospitals, label: t("statsHospitals") },
+            { value: stats.saved,     label: t("statsSaved") },
+            { value: stats.listings,  label: t("statsListings") },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col items-center py-6">
               <span className="text-3xl font-bold text-brand-700">{stat.value}</span>

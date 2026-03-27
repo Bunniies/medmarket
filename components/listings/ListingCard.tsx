@@ -74,16 +74,6 @@ export function ListingCard({ listing }: ListingCardProps) {
             </span>
             <span className="text-xs text-muted-foreground"> / {listing.unit}</span>
           </div>
-          <span
-            className={cn(
-              "rounded-full px-2.5 py-0.5 text-xs font-medium",
-              listing.condition === "SEALED"
-                ? "bg-accent-50 text-accent-700"
-                : "bg-amber-50 text-amber-700"
-            )}
-          >
-            {listing.condition === "SEALED" ? t("sealed") : t("opened")}
-          </span>
         </div>
       </article>
     </Link>

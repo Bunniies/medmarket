@@ -112,6 +112,91 @@ export async function sendInvitationEmail(params: InvitationEmailParams) {
   }
 }
 
+// ─── Medicine alert match ─────────────────────────────────────────────────────
+
+interface AlertNotificationParams {
+  recipientEmail: string;
+  recipientName: string | null;
+  medicineName: string;
+  listingTitle: string;
+  listingId: string;
+  sellerHospital: string;
+}
+
+export async function sendAlertNotification(params: AlertNotificationParams) {
+  const { recipientEmail, recipientName, medicineName, listingTitle, listingId, sellerHospital } = params;
+  const link = `${BASE_URL}/en/listings/${listingId}`;
+
+  try {
+    const resend = getResend();
+    if (!resend) return;
+    await resend.emails.send({
+      from: FROM,
+      to: recipientEmail,
+      subject: `Medicine alert: "${medicineName}" is now available`,
+      html: `
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#111">
+          <h2 style="color:#1a56db">Medicine alert</h2>
+          <p>Hi ${recipientName ?? "there"},</p>
+          <p>
+            A medicine matching your alert for <strong>${medicineName}</strong> has just been listed by
+            <strong>${sellerHospital}</strong>:
+          </p>
+          <p style="background:#f0f4ff;border-radius:8px;padding:12px 16px;font-weight:600">${listingTitle}</p>
+          <a href="${link}" style="display:inline-block;background:#1a56db;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">
+            View listing →
+          </a>
+          <p style="margin-top:24px;font-size:12px;color:#888">
+            You can manage your medicine alerts in your
+            <a href="${BASE_URL}/en/alerts" style="color:#1a56db">alerts settings</a>.
+          </p>
+          <p style="font-size:12px;color:#888">MedMarket — B2B medicine exchange for hospitals</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("[email] sendAlertNotification failed:", err);
+  }
+}
+
+// ─── Password reset ───────────────────────────────────────────────────────────
+
+interface PasswordResetEmailParams {
+  recipientEmail: string;
+  token: string;
+}
+
+export async function sendPasswordResetEmail(params: PasswordResetEmailParams) {
+  const { recipientEmail, token } = params;
+  const link = `${BASE_URL}/en/reset-password?token=${token}`;
+
+  try {
+    const resend = getResend();
+    if (!resend) return;
+    await resend.emails.send({
+      from: FROM,
+      to: recipientEmail,
+      subject: "Reset your MedMarket password",
+      html: `
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#111">
+          <h2 style="color:#1a56db">Reset your password</h2>
+          <p>We received a request to reset the password for your MedMarket account.</p>
+          <p>Click the button below to choose a new password. This link expires in <strong>1 hour</strong>.</p>
+          <a href="${link}" style="display:inline-block;background:#1a56db;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600">
+            Reset password →
+          </a>
+          <p style="margin-top:24px;font-size:12px;color:#888">
+            If you didn't request a password reset, you can safely ignore this email — your password won't change.
+          </p>
+          <p style="font-size:12px;color:#888">MedMarket — B2B medicine exchange for hospitals</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("[email] sendPasswordResetEmail failed:", err);
+  }
+}
+
 // ─── New chat message ─────────────────────────────────────────────────────────
 
 interface MessageNotificationParams {

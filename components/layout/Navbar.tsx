@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Menu, X, ShoppingBag, PlusCircle, LayoutDashboard, LogOut, User, ShoppingCart, ListChecks, MessageSquare, Building2, ShieldCheck } from "lucide-react";
+import { Menu, X, ShoppingBag, PlusCircle, LayoutDashboard, LogOut, User, ShoppingCart, ListChecks, MessageSquare, Building2, ShieldCheck, Bell } from "lucide-react";
 import { UnreadBadge } from "@/components/chat/UnreadBadge";
 import { cn } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
@@ -111,6 +111,14 @@ export function Navbar() {
                       {t("messages")}
                       <UnreadBadge />
                     </Link>
+                    <Link
+                      href="/alerts"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-secondary"
+                    >
+                      <Bell className="h-4 w-4" />
+                      {t("alerts")}
+                    </Link>
                     {role === "HOSPITAL_ADMIN" && (
                       <Link
                         href="/my-hospital"
@@ -202,6 +210,9 @@ export function Navbar() {
                 <Link href="/conversations" className="flex items-center text-sm font-medium text-gray-700" onClick={() => setMobileOpen(false)}>
                   {t("messages")}
                   <UnreadBadge />
+                </Link>
+                <Link href="/alerts" className="text-sm font-medium text-gray-700" onClick={() => setMobileOpen(false)}>
+                  {t("alerts")}
                 </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}

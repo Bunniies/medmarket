@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { Navbar } from "@/components/layout/Navbar";
 import { NewListingForm } from "@/components/listings/NewListingForm";
 import { db } from "@/lib/db";
 
@@ -30,12 +29,9 @@ export default async function NewListingPage({
   const categories = await db.category.findMany({ orderBy: { name: "asc" } });
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-        <h1 className="mb-6 text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
-        <NewListingForm categories={categories} />
-      </main>
-    </div>
+    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+  <h1 className="mb-6 text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
+  <NewListingForm categories={categories} />
+</main>
   );
 }

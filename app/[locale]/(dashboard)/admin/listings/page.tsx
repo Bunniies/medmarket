@@ -3,7 +3,6 @@ import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminListingsManager } from "@/components/admin/AdminListingsManager";
 
@@ -38,14 +37,11 @@ export default async function AdminListingsPage({ params }: { params: Promise<{ 
   }));
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
-        <p className="mb-8 text-sm text-muted-foreground">{serialized.length} listing{serialized.length !== 1 ? "s" : ""} total</p>
-        <AdminNav />
-        <AdminListingsManager listings={serialized} />
-      </main>
-    </div>
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+  <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
+  <p className="mb-8 text-sm text-muted-foreground">{serialized.length} listing{serialized.length !== 1 ? "s" : ""} total</p>
+  <AdminNav />
+  <AdminListingsManager listings={serialized} />
+</main>
   );
 }

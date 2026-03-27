@@ -37,6 +37,7 @@ model User {
   initiatedConversations Conversation[]  @relation("ConversationInitiator")
   sentMessages           Message[]
   adminLogs              AdminLog[]
+  medicineAlerts         MedicineAlert[]
 
   @@map("users")
 }
@@ -238,6 +239,23 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
   DISPUTED
+}
+
+// ─────────────────────────────────────────────
+// MEDICINE ALERTS
+// ─────────────────────────────────────────────
+
+model MedicineAlert {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicineName  String   // free-text search term matched against listing medicineName / genericName
+  atcCode       String?  // optional — matched exactly when present on both alert and listing
+  maxDistanceKm Int?     // null = no distance limit
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@map("medicine_alerts")
 }
 
 // ─────────────────────────────────────────────

@@ -3,7 +3,6 @@ import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminChartsWrapper } from "@/components/admin/AdminChartsWrapper";
 import type { AdminChartsData } from "@/components/admin/AdminCharts";
@@ -194,28 +193,25 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
   ];
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
-        <p className="mb-8 text-sm text-muted-foreground">Platform overview</p>
-        <AdminNav />
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+  <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
+  <p className="mb-8 text-sm text-muted-foreground">Platform overview</p>
+  <AdminNav />
 
-        <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {statCards.map((s) => (
-            <div key={s.label} className="rounded-xl border border-border bg-white p-5">
-              <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg ${s.bg}`}>
-                <s.icon className={`h-5 w-5 ${s.color}`} />
-              </div>
-              <p className="text-2xl font-bold text-gray-900">{s.value}</p>
-              <p className="mt-0.5 text-sm font-medium text-gray-700">{s.label}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{s.sub}</p>
-            </div>
-          ))}
+  <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
+    {statCards.map((s) => (
+      <div key={s.label} className="rounded-xl border border-border bg-white p-5">
+        <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg ${s.bg}`}>
+          <s.icon className={`h-5 w-5 ${s.color}`} />
         </div>
+        <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+        <p className="mt-0.5 text-sm font-medium text-gray-700">{s.label}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{s.sub}</p>
+      </div>
+    ))}
+  </div>
 
-        <AdminChartsWrapper data={chartsData} />
-      </main>
-    </div>
+  <AdminChartsWrapper data={chartsData} />
+</main>
   );
 }

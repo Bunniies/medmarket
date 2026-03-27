@@ -3,7 +3,6 @@ import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminUsersManager } from "@/components/admin/AdminUsersManager";
 
@@ -34,14 +33,11 @@ export default async function AdminUsersPage({ params }: { params: Promise<{ loc
   }));
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
-        <p className="mb-8 text-sm text-muted-foreground">{serialized.length} user{serialized.length !== 1 ? "s" : ""}</p>
-        <AdminNav />
-        <AdminUsersManager users={serialized} />
-      </main>
-    </div>
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+  <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
+  <p className="mb-8 text-sm text-muted-foreground">{serialized.length} user{serialized.length !== 1 ? "s" : ""}</p>
+  <AdminNav />
+  <AdminUsersManager users={serialized} />
+</main>
   );
 }

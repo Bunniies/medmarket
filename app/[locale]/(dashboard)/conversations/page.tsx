@@ -2,7 +2,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { ConversationList } from "@/components/chat/ConversationList";
 import type { ConvRow } from "@/components/chat/ConversationList";
 
@@ -95,12 +94,9 @@ export default async function ConversationsPage({ params }: { params: Promise<{ 
   }));
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <h1 className="mb-8 text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
-        <ConversationList conversations={serialized} currentUserId={userId} />
-      </main>
-    </div>
+    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+  <h1 className="mb-8 text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
+  <ConversationList conversations={serialized} currentUserId={userId} />
+</main>
   );
 }

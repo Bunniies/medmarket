@@ -3,7 +3,6 @@ import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminLogsManager } from "@/components/admin/AdminLogsManager";
 
@@ -34,16 +33,13 @@ export default async function AdminLogsPage({ params }: { params: Promise<{ loca
   }));
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
-        <p className="mb-8 text-sm text-muted-foreground">
-          {serialized.length === 0 ? "No actions recorded yet." : `${serialized.length} action${serialized.length !== 1 ? "s" : ""} recorded`}
-        </p>
-        <AdminNav />
-        <AdminLogsManager logs={serialized} />
-      </main>
-    </div>
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+  <h1 className="mb-1 text-3xl font-bold text-gray-900">Admin</h1>
+  <p className="mb-8 text-sm text-muted-foreground">
+    {serialized.length === 0 ? "No actions recorded yet." : `${serialized.length} action${serialized.length !== 1 ? "s" : ""} recorded`}
+  </p>
+  <AdminNav />
+  <AdminLogsManager logs={serialized} />
+</main>
   );
 }

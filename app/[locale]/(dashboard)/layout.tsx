@@ -1,5 +1,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { Navbar } from "@/components/layout/Navbar";
+import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
 import { VerificationBanner } from "@/components/layout/VerificationBanner";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -16,8 +18,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <>
-      {showBanner && <VerificationBanner />}
-      {children}
+      <Navbar />
+      <div className="flex min-h-screen bg-secondary/20">
+        <DashboardSidebar />
+        <div className="flex-1 min-w-0">
+          {showBanner && <VerificationBanner />}
+          {children}
+        </div>
+      </div>
     </>
   );
 }

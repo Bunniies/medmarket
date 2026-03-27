@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { NewListingForm } from "@/components/listings/NewListingForm";
 import type { ListingForEdit } from "@/components/listings/NewListingForm";
 import { ArrowLeft } from "lucide-react";
@@ -50,25 +49,21 @@ export default async function EditListingPage({
     quantity: listing.quantity,
     unit: listing.unit,
     pricePerUnit: Number(listing.pricePerUnit),
-    condition: listing.condition,
     categoryId: listing.categoryId,
     description: listing.description,
   };
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-        <Link
-          href="/my-listings"
-          className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-gray-900"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          {t("pageTitle")}
-        </Link>
-        <h1 className="mb-6 mt-4 text-3xl font-bold text-gray-900">{t("editPageTitle")}</h1>
-        <NewListingForm categories={categories} listing={listingForEdit} />
-      </main>
-    </div>
+    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+  <Link
+    href="/my-listings"
+    className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-gray-900"
+  >
+    <ArrowLeft className="h-4 w-4" />
+    {t("pageTitle")}
+  </Link>
+  <h1 className="mb-6 mt-4 text-3xl font-bold text-gray-900">{t("editPageTitle")}</h1>
+  <NewListingForm categories={categories} listing={listingForEdit} />
+</main>
   );
 }

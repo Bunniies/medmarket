@@ -3,7 +3,6 @@ import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { Navbar } from "@/components/layout/Navbar";
 import { InviteManager } from "@/components/admin/InviteManager";
 import { formatDate } from "@/lib/utils";
 
@@ -47,18 +46,15 @@ export default async function MyHospitalPage({ params }: { params: Promise<{ loc
   }));
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <Navbar />
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <h1 className="mb-1 text-3xl font-bold text-gray-900">{hospital.name}</h1>
-        <p className="mb-8 text-sm text-muted-foreground">{hospital.city}, {hospital.country}</p>
+    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+  <h1 className="mb-1 text-3xl font-bold text-gray-900">{hospital.name}</h1>
+  <p className="mb-8 text-sm text-muted-foreground">{hospital.city}, {hospital.country}</p>
 
-        <InviteManager
-          members={serializedMembers}
-          invitations={serializedInvitations}
-          isVerified={hospital.verified}
-        />
-      </main>
-    </div>
+  <InviteManager
+    members={serializedMembers}
+    invitations={serializedInvitations}
+    isVerified={hospital.verified}
+  />
+</main>
   );
 }
