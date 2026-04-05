@@ -33,7 +33,9 @@ function LoginForm() {
 
     setLoading(false);
 
-    if (result?.error) {
+    if (result?.error === "account_deactivated") {
+      setError(t("accountDeactivated"));
+    } else if (result?.error) {
       setError(t("invalidCredentials"));
     } else {
       router.push(callbackUrl);

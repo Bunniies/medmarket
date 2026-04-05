@@ -5,24 +5,24 @@ import type { NextAuthConfig } from "next-auth";
 export const authConfig: NextAuthConfig = {
   session: { strategy: "jwt" },
   pages: {
-    signIn: "/en/login",
-    error: "/en/login",
+    signIn: "/login",
+    error: "/login",
   },
   providers: [],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = (user as any).role;
-        token.hospitalId = (user as any).hospitalId;
+        token.id = user.id!;
+        token.role = user.role;
+        token.hospitalId = user.hospitalId;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as string;
-        (session.user as any).role = token.role;
-        (session.user as any).hospitalId = token.hospitalId;
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.hospitalId = token.hospitalId;
       }
       return session;
     },

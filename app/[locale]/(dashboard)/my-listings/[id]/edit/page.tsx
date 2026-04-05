@@ -31,6 +31,7 @@ export default async function EditListingPage({
     db.listing.findUnique({ where: { id } }),
     db.category.findMany({ orderBy: { name: "asc" } }),
   ]);
+  const aiSuggestEnabled = !!process.env.ANTHROPIC_API_KEY;
 
   if (!listing) notFound();
   if (listing.sellerId !== userId) notFound();
@@ -42,12 +43,16 @@ export default async function EditListingPage({
     title: listing.title,
     medicineName: listing.medicineName,
     genericName: listing.genericName,
+    aicCode: listing.aicCode,
     atcCode: listing.atcCode,
     manufacturer: listing.manufacturer,
     batchNumber: listing.batchNumber,
     expiryDate: listing.expiryDate.toISOString().slice(0, 10),
     quantity: listing.quantity,
+    remainingQuantity: listing.remainingQuantity,
     unit: listing.unit,
+    totalValue: listing.totalValue ? Number(listing.totalValue) : null,
+    storageCondition: listing.storageCondition,
     pricePerUnit: Number(listing.pricePerUnit),
     categoryId: listing.categoryId,
     description: listing.description,
@@ -63,7 +68,7 @@ export default async function EditListingPage({
     {t("pageTitle")}
   </Link>
   <h1 className="mb-6 mt-4 text-3xl font-bold text-gray-900">{t("editPageTitle")}</h1>
-  <NewListingForm categories={categories} listing={listingForEdit} />
+  <NewListingForm categories={categories} listing={listingForEdit} aiSuggestEnabled={aiSuggestEnabled} />
 </main>
   );
 }

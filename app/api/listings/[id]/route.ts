@@ -51,7 +51,8 @@ export async function PATCH(
     }
 
     // Full update — reuse create schema for field validation
-    const parsed = createListingSchema.safeParse(body);
+    const { remainingQuantity, ...bodyWithoutRemaining } = body;
+    const parsed = createListingSchema.safeParse(bodyWithoutRemaining);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
     }
@@ -59,7 +60,13 @@ export async function PATCH(
     const { expiryDate, ...rest } = parsed.data;
     const updated = await db.listing.update({
       where: { id },
-      data: { ...rest, expiryDate: new Date(expiryDate) },
+      data: {
+        ...rest,
+        expiryDate: new Date(expiryDate),
+        ...(remainingQuantity !== undefined && remainingQuantity !== null && {
+          remainingQuantity: Number(remainingQuantity),
+        }),
+      },
     });
     return NextResponse.json(updated);
   } catch (err) {

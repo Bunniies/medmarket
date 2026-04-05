@@ -130,8 +130,12 @@ model Listing {
   manufacturer    String?
   batchNumber     String?
   expiryDate      DateTime
-  quantity        Int
+  aicCode         String?         // AIC (Autorizzazione all'Immissione in Commercio) code
+  quantity        Int             // initial quantity
+  remainingQuantity Int?          // remaining units after partial sales; initialized to quantity on create
   unit            String          @default("units") // units, vials, boxes, etc.
+  totalValue      Decimal?        @db.Decimal(10, 2) // total value in EUR
+  storageCondition String?        // e.g. "2–8°C", "8–15°C", "15–20°C", "<25°C"
   pricePerUnit    Decimal         @db.Decimal(10, 2)
   currency        String          @default("EUR")
   condition       MedicineCondition @default(SEALED)

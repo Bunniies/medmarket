@@ -44,7 +44,7 @@ export function ListingCard({ listing }: ListingCardProps) {
           <div className="flex items-center gap-2">
             <Package className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
             <span>
-              {listing.quantity} {listing.unit}
+              {listing.remainingQuantity ?? listing.quantity} {listing.unit}
               {listing.manufacturer && (
                 <span className="text-muted-foreground"> · {listing.manufacturer}</span>
               )}

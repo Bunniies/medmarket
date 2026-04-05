@@ -1,9 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { Link } from "@/i18n/navigation";
-import { NewListingForm } from "@/components/listings/NewListingForm";
 import { db } from "@/lib/db";
+import { CsvImporter } from "@/components/listings/CsvImporter";
 
 export async function generateMetadata({
   params,
@@ -11,11 +10,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "newListing" });
+  const t = await getTranslations({ locale, namespace: "csvImport" });
   return { title: t("metaTitle") };
 }
 
-export default async function NewListingPage({
+export default async function ImportListingsPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -26,22 +25,16 @@ export default async function NewListingPage({
   const session = await auth();
   if (!session) redirect(`/${locale}/login`);
 
-  const t = await getTranslations("newListing");
+  const t = await getTranslations("csvImport");
   const categories = await db.category.findMany({ orderBy: { name: "asc" } });
-  const aiSuggestEnabled = !!process.env.ANTHROPIC_API_KEY;
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <div className="mb-6 flex items-center justify-between">
+    <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">{t("pageTitle")}</h1>
-        <Link
-          href="/listings/import"
-          className="text-sm text-brand-600 hover:underline"
-        >
-          {t("importCsvLink")}
-        </Link>
+        <p className="mt-2 text-sm text-muted-foreground">{t("pageSubtitle")}</p>
       </div>
-      <NewListingForm categories={categories} aiSuggestEnabled={aiSuggestEnabled} />
+      <CsvImporter categories={categories} />
     </main>
   );
 }

@@ -8,6 +8,8 @@ import { AdminChartsWrapper } from "@/components/admin/AdminChartsWrapper";
 import type { AdminChartsData } from "@/components/admin/AdminCharts";
 import { Building2, Users, ListChecks, ShoppingCart, TrendingUp, CheckCircle } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { ImpactCard } from "@/components/impact/ImpactCard";
+import { computeImpact } from "@/lib/impact";
 
 export const metadata = { title: "Admin Overview" };
 
@@ -52,7 +54,7 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
     db.listing.count({ where: { status: "ACTIVE" } }),
     db.user.count({ where: { role: { not: "PLATFORM_ADMIN" } } }),
     db.order.findMany({
-      select: { status: true, totalPrice: true, createdAt: true, sellerHospitalId: true, buyerHospitalId: true },
+      select: { status: true, totalPrice: true, quantity: true, createdAt: true, sellerHospitalId: true, buyerHospitalId: true },
     }),
     db.hospital.findMany({ select: { id: true, name: true }, where: { verified: true } }),
     db.hospital.findMany({
@@ -72,6 +74,9 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
 
   // GMV + completion rate
   const deliveredOrders = allOrders.filter((o) => o.status === "DELIVERED");
+  const platformImpact = computeImpact(
+    deliveredOrders.map((o) => ({ quantity: o.quantity, totalPrice: Number(o.totalPrice) }))
+  );
   const gmv = deliveredOrders.reduce((sum, o) => sum + Number(o.totalPrice), 0);
   const completionRate = allOrders.length > 0
     ? Math.round((deliveredOrders.length / allOrders.length) * 100)
@@ -209,6 +214,10 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
         <p className="mt-0.5 text-xs text-muted-foreground">{s.sub}</p>
       </div>
     ))}
+  </div>
+
+  <div className="mb-8">
+    <ImpactCard data={platformImpact} variant="platform" />
   </div>
 
   <AdminChartsWrapper data={chartsData} />

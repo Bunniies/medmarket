@@ -15,14 +15,27 @@ async function main() {
   console.log("🌱 Seeding database...");
 
   // ── Categories ──────────────────────────────────────────────────────────────
-  const [catOncology, catCardiology, catNeurology, catImmunology, catAntibiotics, catAnesthesiology] =
+  const [catOncology, catCardiology, catNeurology, catImmunology, catAntibiotics, catAnesthesiology,
+         catGastroenterology, catHematology, catDermatology, catGynecology, catEndocrinology,
+         catRheumatology, catRespiratory, catOphthalmology, catUrology] =
     await Promise.all([
-      prisma.category.upsert({ where: { slug: "oncology" },       update: {}, create: { name: "Oncology",       slug: "oncology",       icon: "🔬" } }),
-      prisma.category.upsert({ where: { slug: "cardiology" },     update: {}, create: { name: "Cardiology",     slug: "cardiology",     icon: "❤️" } }),
-      prisma.category.upsert({ where: { slug: "neurology" },      update: {}, create: { name: "Neurology",      slug: "neurology",      icon: "🧠" } }),
-      prisma.category.upsert({ where: { slug: "immunology" },     update: {}, create: { name: "Immunology",     slug: "immunology",     icon: "🛡️" } }),
-      prisma.category.upsert({ where: { slug: "antibiotics" },    update: {}, create: { name: "Antibiotics",    slug: "antibiotics",    icon: "💊" } }),
-      prisma.category.upsert({ where: { slug: "anesthesiology" }, update: {}, create: { name: "Anesthesiology", slug: "anesthesiology", icon: "😴" } }),
+      // existing
+      prisma.category.upsert({ where: { slug: "oncology" },         update: {}, create: { name: "Oncology",         slug: "oncology",         icon: "🔬" } }),
+      prisma.category.upsert({ where: { slug: "cardiology" },       update: {}, create: { name: "Cardiology",       slug: "cardiology",       icon: "❤️" } }),
+      prisma.category.upsert({ where: { slug: "neurology" },        update: {}, create: { name: "Neurology",        slug: "neurology",        icon: "🧠" } }),
+      prisma.category.upsert({ where: { slug: "immunology" },       update: {}, create: { name: "Immunology",       slug: "immunology",       icon: "🛡️" } }),
+      prisma.category.upsert({ where: { slug: "antibiotics" },      update: {}, create: { name: "Antibiotics",      slug: "antibiotics",      icon: "💊" } }),
+      prisma.category.upsert({ where: { slug: "anesthesiology" },   update: {}, create: { name: "Anesthesiology",   slug: "anesthesiology",   icon: "😴" } }),
+      // new — full ATC first-level coverage
+      prisma.category.upsert({ where: { slug: "gastroenterology" }, update: {}, create: { name: "Gastroenterology", slug: "gastroenterology", icon: "🫁" } }), // A
+      prisma.category.upsert({ where: { slug: "hematology" },       update: {}, create: { name: "Hematology",       slug: "hematology",       icon: "🩸" } }), // B
+      prisma.category.upsert({ where: { slug: "dermatology" },      update: {}, create: { name: "Dermatology",      slug: "dermatology",      icon: "🩹" } }), // D
+      prisma.category.upsert({ where: { slug: "gynecology" },       update: {}, create: { name: "Gynecology",       slug: "gynecology",       icon: "🌸" } }), // G
+      prisma.category.upsert({ where: { slug: "endocrinology" },    update: {}, create: { name: "Endocrinology",    slug: "endocrinology",    icon: "⚗️" } }), // H
+      prisma.category.upsert({ where: { slug: "rheumatology" },     update: {}, create: { name: "Rheumatology",     slug: "rheumatology",     icon: "🦴" } }), // M
+      prisma.category.upsert({ where: { slug: "respiratory" },      update: {}, create: { name: "Respiratory",      slug: "respiratory",      icon: "🫀" } }), // R
+      prisma.category.upsert({ where: { slug: "ophthalmology" },    update: {}, create: { name: "Ophthalmology",    slug: "ophthalmology",    icon: "👁️" } }), // S
+      prisma.category.upsert({ where: { slug: "urology" },          update: {}, create: { name: "Urology",          slug: "urology",          icon: "💧" } }), // G (urinary)
     ]);
 
   // ── Hospitals ────────────────────────────────────────────────────────────────
@@ -65,84 +78,148 @@ async function main() {
     prisma.user.upsert({ where: { email: "admin@meyer.demo"      }, update: {}, create: { email: "admin@meyer.demo",      name: "Davide Marino",   passwordHash, role: UserRole.HOSPITAL_ADMIN, hospitalId: hFlorence.id } }),
   ]);
 
-  // ── Listings ─────────────────────────────────────────────────────────────────
+  // ── Listings — delete existing, then recreate with full field set ────────────
+  // Orders must be deleted first (no cascade from Order → Listing in schema)
+  await prisma.order.deleteMany({});
+  await prisma.listing.deleteMany({});
+
   const listings = await Promise.all([
-    // Milan listings
-    prisma.listing.upsert({ where: { id: "lst-milan-1" }, update: {}, create: {
-      id: "lst-milan-1", title: "Trastuzumab 440mg — 20 vials", medicineName: "Trastuzumab", genericName: "Trastuzumab", atcCode: "L01FD01",
-      manufacturer: "Roche", batchNumber: "BT-2024-001", expiryDate: daysFromNow(45),
-      quantity: 20, unit: "vials", pricePerUnit: 850, currency: "EUR",
+    // ── Milan — Niguarda ──────────────────────────────────────────────────────
+    prisma.listing.create({ data: {
+      id: "lst-milan-1",
+      title: "Trastuzumab 440mg — 20 fiale",
+      medicineName: "Trastuzumab", genericName: "Trastuzumab",
+      aicCode: "033395012", atcCode: "L01FD01",
+      manufacturer: "Roche", batchNumber: "BT-2026-001",
+      expiryDate: daysFromNow(45),
+      quantity: 20, remainingQuantity: 20, unit: "fiale",
+      pricePerUnit: 850, totalValue: 20 * 850, currency: "EUR",
+      storageCondition: "2–8°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
       sellerId: uMilan.id, hospitalId: hMilan.id, categoryId: catOncology.id,
     }}),
-    prisma.listing.upsert({ where: { id: "lst-milan-2" }, update: {}, create: {
-      id: "lst-milan-2", title: "Amiodarone 200mg — 60 tablets surplus", medicineName: "Amiodarone", genericName: "Amiodarone hydrochloride", atcCode: "C01BD01",
-      manufacturer: "Sanofi", batchNumber: "SA-2024-112", expiryDate: daysFromNow(180),
-      quantity: 60, unit: "tablets", pricePerUnit: 12.50, currency: "EUR",
+    prisma.listing.create({ data: {
+      id: "lst-milan-2",
+      title: "Omeprazolo 40mg — 60 fiale",
+      medicineName: "Omeprazolo", genericName: "Omeprazolo sodico",
+      aicCode: "023904016", atcCode: "A02BC01",
+      manufacturer: "AstraZeneca", batchNumber: "AZ-2026-088",
+      expiryDate: daysFromNow(180),
+      quantity: 60, remainingQuantity: 60, unit: "fiale",
+      pricePerUnit: 8.50, totalValue: 60 * 8.50, currency: "EUR",
+      storageCondition: "<25°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
-      sellerId: uMilan.id, hospitalId: hMilan.id, categoryId: catCardiology.id,
+      sellerId: uMilan.id, hospitalId: hMilan.id, categoryId: catGastroenterology.id,
     }}),
 
-    // Rome listings
-    prisma.listing.upsert({ where: { id: "lst-rome-1" }, update: {}, create: {
-      id: "lst-rome-1", title: "Rituximab 500mg — 15 vials expiring soon", medicineName: "Rituximab", genericName: "Rituximab", atcCode: "L01FA01",
-      manufacturer: "Roche", batchNumber: "RT-2024-055", expiryDate: daysFromNow(28),
-      quantity: 15, unit: "vials", pricePerUnit: 920, currency: "EUR",
+    // ── Rome — Gemelli ────────────────────────────────────────────────────────
+    prisma.listing.create({ data: {
+      id: "lst-rome-1",
+      title: "Rituximab 500mg — 15 fiale in scadenza",
+      medicineName: "Rituximab", genericName: "Rituximab",
+      aicCode: "034875046", atcCode: "L01FA01",
+      manufacturer: "Roche", batchNumber: "RT-2026-055",
+      expiryDate: daysFromNow(28),
+      quantity: 15, remainingQuantity: 15, unit: "fiale",
+      pricePerUnit: 920, totalValue: 15 * 920, currency: "EUR",
+      storageCondition: "2–8°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
       sellerId: uRome.id, hospitalId: hRome.id, categoryId: catOncology.id,
     }}),
-    prisma.listing.upsert({ where: { id: "lst-rome-2" }, update: {}, create: {
-      id: "lst-rome-2", title: "Methylprednisolone 1g — 30 vials", medicineName: "Methylprednisolone", genericName: "Methylprednisolone sodium succinate", atcCode: "H02AB04",
-      manufacturer: "Pfizer", batchNumber: "PF-2024-309", expiryDate: daysFromNow(120),
-      quantity: 30, unit: "vials", pricePerUnit: 38, currency: "EUR",
+    prisma.listing.create({ data: {
+      id: "lst-rome-2",
+      title: "Enoxaparina 4000 UI — 50 siringhe",
+      medicineName: "Enoxaparina", genericName: "Enoxaparina sodica",
+      aicCode: "026732078", atcCode: "B01AB05",
+      manufacturer: "Sanofi", batchNumber: "SA-2026-309",
+      expiryDate: daysFromNow(120),
+      quantity: 50, remainingQuantity: 50, unit: "siringhe preriempite",
+      pricePerUnit: 6.80, totalValue: 50 * 6.80, currency: "EUR",
+      storageCondition: "<25°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
-      sellerId: uRome.id, hospitalId: hRome.id, categoryId: catImmunology.id,
+      sellerId: uRome.id, hospitalId: hRome.id, categoryId: catHematology.id,
     }}),
 
-    // Genoa listings
-    prisma.listing.upsert({ where: { id: "lst-genoa-1" }, update: {}, create: {
-      id: "lst-genoa-1", title: "Vancomycin 500mg — 40 vials", medicineName: "Vancomycin", genericName: "Vancomycin hydrochloride", atcCode: "J01XA01",
-      manufacturer: "Hikma", batchNumber: "HK-2024-771", expiryDate: daysFromNow(60),
-      quantity: 40, unit: "vials", pricePerUnit: 22, currency: "EUR",
+    // ── Genoa — San Martino ───────────────────────────────────────────────────
+    prisma.listing.create({ data: {
+      id: "lst-genoa-1",
+      title: "Vancomicina 500mg — 40 flaconi",
+      medicineName: "Vancomicina", genericName: "Vancomicina cloridrato",
+      aicCode: "024189016", atcCode: "J01XA01",
+      manufacturer: "Hikma", batchNumber: "HK-2026-771",
+      expiryDate: daysFromNow(60),
+      quantity: 40, remainingQuantity: 40, unit: "flaconi",
+      pricePerUnit: 22, totalValue: 40 * 22, currency: "EUR",
+      storageCondition: "<25°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
       sellerId: uGenoa.id, hospitalId: hGenoa.id, categoryId: catAntibiotics.id,
     }}),
-    prisma.listing.upsert({ where: { id: "lst-genoa-2" }, update: {}, create: {
-      id: "lst-genoa-2", title: "Propofol 200mg/20ml — 50 vials", medicineName: "Propofol", genericName: "Propofol", atcCode: "N01AX10",
-      manufacturer: "Fresenius", batchNumber: "FR-2024-440", expiryDate: daysFromNow(15),
-      quantity: 50, unit: "vials", pricePerUnit: 8.80, currency: "EUR",
+    prisma.listing.create({ data: {
+      id: "lst-genoa-2",
+      title: "Salbutamolo 2.5mg — 100 fiale per nebulizzazione",
+      medicineName: "Salbutamolo", genericName: "Salbutamolo solfato",
+      aicCode: "023702038", atcCode: "R03AC02",
+      manufacturer: "GlaxoSmithKline", batchNumber: "GS-2026-440",
+      expiryDate: daysFromNow(200),
+      quantity: 100, remainingQuantity: 100, unit: "fiale",
+      pricePerUnit: 2.40, totalValue: 100 * 2.40, currency: "EUR",
+      storageCondition: "<25°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
-      sellerId: uGenoa.id, hospitalId: hGenoa.id, categoryId: catAnesthesiology.id,
+      sellerId: uGenoa.id, hospitalId: hGenoa.id, categoryId: catRespiratory.id,
     }}),
 
-    // Padova listings
-    prisma.listing.upsert({ where: { id: "lst-padova-1" }, update: {}, create: {
-      id: "lst-padova-1", title: "Cyclosporine 100mg — 25 capsules", medicineName: "Cyclosporine", genericName: "Ciclosporin", atcCode: "L04AD01",
-      manufacturer: "Novartis", batchNumber: "NV-2024-213", expiryDate: daysFromNow(200),
-      quantity: 25, unit: "capsules", pricePerUnit: 145, currency: "EUR",
+    // ── Padova — AO Padova ────────────────────────────────────────────────────
+    prisma.listing.create({ data: {
+      id: "lst-padova-1",
+      title: "Ciclosporina 100mg — 25 capsule",
+      medicineName: "Ciclosporina", genericName: "Ciclosporina",
+      aicCode: "028431034", atcCode: "L04AD01",
+      manufacturer: "Novartis", batchNumber: "NV-2026-213",
+      expiryDate: daysFromNow(200),
+      quantity: 25, remainingQuantity: 25, unit: "capsule",
+      pricePerUnit: 145, totalValue: 25 * 145, currency: "EUR",
+      storageCondition: "<25°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
       sellerId: uPadova.id, hospitalId: hPadova.id, categoryId: catImmunology.id,
     }}),
-    prisma.listing.upsert({ where: { id: "lst-padova-2" }, update: {}, create: {
-      id: "lst-padova-2", title: "Levetiracetam 500mg — 100 tablets", medicineName: "Levetiracetam", genericName: "Levetiracetam", atcCode: "N03AX14",
-      manufacturer: "UCB Pharma", batchNumber: "UC-2024-882", expiryDate: daysFromNow(270),
-      quantity: 100, unit: "tablets", pricePerUnit: 4.20, currency: "EUR",
+    prisma.listing.create({ data: {
+      id: "lst-padova-2",
+      title: "Levetiracetam 500mg — 100 compresse",
+      medicineName: "Levetiracetam", genericName: "Levetiracetam",
+      aicCode: "033665034", atcCode: "N03AX14",
+      manufacturer: "UCB Pharma", batchNumber: "UC-2026-882",
+      expiryDate: daysFromNow(270),
+      quantity: 100, remainingQuantity: 100, unit: "compresse",
+      pricePerUnit: 4.20, totalValue: 100 * 4.20, currency: "EUR",
+      storageCondition: "<25°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
       sellerId: uPadova.id, hospitalId: hPadova.id, categoryId: catNeurology.id,
     }}),
 
-    // Florence listings
-    prisma.listing.upsert({ where: { id: "lst-florence-1" }, update: {}, create: {
-      id: "lst-florence-1", title: "Bevacizumab 400mg — 12 vials expiring soon", medicineName: "Bevacizumab", genericName: "Bevacizumab", atcCode: "L01FG01",
-      manufacturer: "Roche", batchNumber: "BV-2024-099", expiryDate: daysFromNow(35),
-      quantity: 12, unit: "vials", pricePerUnit: 1100, currency: "EUR",
+    // ── Florence — Meyer ──────────────────────────────────────────────────────
+    prisma.listing.create({ data: {
+      id: "lst-florence-1",
+      title: "Bevacizumab 400mg — 12 fiale in scadenza",
+      medicineName: "Bevacizumab", genericName: "Bevacizumab",
+      aicCode: "034875065", atcCode: "L01FG01",
+      manufacturer: "Roche", batchNumber: "BV-2026-099",
+      expiryDate: daysFromNow(35),
+      quantity: 12, remainingQuantity: 12, unit: "fiale",
+      pricePerUnit: 1100, totalValue: 12 * 1100, currency: "EUR",
+      storageCondition: "2–8°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
       sellerId: uFlorence.id, hospitalId: hFlorence.id, categoryId: catOncology.id,
     }}),
-    prisma.listing.upsert({ where: { id: "lst-florence-2" }, update: {}, create: {
-      id: "lst-florence-2", title: "Piperacillin/Tazobactam 4.5g — 80 vials", medicineName: "Piperacillin/Tazobactam", genericName: "Piperacillin / Tazobactam", atcCode: "J01CR05",
-      manufacturer: "Pfizer", batchNumber: "PF-2024-501", expiryDate: daysFromNow(90),
-      quantity: 80, unit: "vials", pricePerUnit: 18.50, currency: "EUR",
+    prisma.listing.create({ data: {
+      id: "lst-florence-2",
+      title: "Piperacillina/Tazobactam 4.5g — 80 flaconi",
+      medicineName: "Piperacillina/Tazobactam", genericName: "Piperacillina / Tazobactam",
+      aicCode: "029916019", atcCode: "J01CR05",
+      manufacturer: "Pfizer", batchNumber: "PF-2026-501",
+      expiryDate: daysFromNow(90),
+      quantity: 80, remainingQuantity: 80, unit: "flaconi",
+      pricePerUnit: 18.50, totalValue: 80 * 18.50, currency: "EUR",
+      storageCondition: "<25°C",
       condition: MedicineCondition.SEALED, status: ListingStatus.ACTIVE,
       sellerId: uFlorence.id, hospitalId: hFlorence.id, categoryId: catAntibiotics.id,
     }}),
@@ -214,7 +291,7 @@ async function main() {
     });
   }
 
-  console.log(`✅ Seed complete — 5 hospitals, 5 users, 10 listings, ${orderSeeds.length} orders`);
+  console.log(`✅ Seed complete — 5 hospitals, 5 users, 10 listings (refreshed with AIC/ATC/storageCondition/totalValue), ${orderSeeds.length} orders`);
 }
 
 main()

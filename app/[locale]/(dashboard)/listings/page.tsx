@@ -91,6 +91,7 @@ async function getListings(
   const serialized: ListingWithRelations[] = listings.map((l) => ({
     ...l,
     pricePerUnit: Number(l.pricePerUnit),
+    totalValue: l.totalValue ? Number(l.totalValue) : null,
   }));
   return { listings: serialized, total, pageSize };
 }

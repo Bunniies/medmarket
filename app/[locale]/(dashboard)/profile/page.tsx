@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { Building2 } from "lucide-react";
 import { ProfileAnalytics } from "@/components/profile/ProfileAnalytics";
 import { NotificationSettings } from "@/components/profile/NotificationSettings";
+import { ImpactCard } from "@/components/impact/ImpactCard";
+import { computeImpact } from "@/lib/impact";
 import type { OrderForChart } from "@/components/profile/StatsCharts";
 import type { OrderForTable } from "@/components/profile/ProfileAnalytics";
 
@@ -61,6 +63,15 @@ export default async function ProfilePage({
   ]);
 
   const t = await getTranslations("profile");
+
+  // Environmental impact — deduplicate by order ID across buyer + seller roles
+  const deliveredMap = new Map<string, { quantity: number; totalPrice: number }>();
+  for (const o of [...buyerOrders, ...sellerOrders]) {
+    if (o.status === "DELIVERED" && !deliveredMap.has(o.id)) {
+      deliveredMap.set(o.id, { quantity: o.quantity, totalPrice: Number(o.totalPrice) });
+    }
+  }
+  const userImpact = computeImpact(Array.from(deliveredMap.values()));
 
   // Serialize for charts
   const ordersAsBuyer: OrderForChart[] = buyerOrders.map((o) => ({
@@ -161,6 +172,11 @@ export default async function ProfilePage({
   {/* ── Notification settings ── */}
   <div className="mb-10">
     <NotificationSettings emailNotifyMessages={user.emailNotifyMessages} />
+  </div>
+
+  {/* ── Environmental impact ── */}
+  <div className="mb-10">
+    <ImpactCard data={userImpact} variant="user" />
   </div>
 
   {/* ── Analytics + orders (client, toggle-driven) ── */}

@@ -17,8 +17,9 @@ export const loginSchema = z.object({
 export const createListingSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().optional(),
-  medicineName: z.string().min(2, "Medicine name is required"),
-  genericName: z.string().optional(),
+  medicineName: z.string().min(2, "Commercial name is required"),
+  genericName: z.string().min(1, "Active ingredient is required"),
+  aicCode: z.string().min(1, "AIC code is required"),
   atcCode: z.string().optional(),
   manufacturer: z.string().optional(),
   batchNumber: z.string().optional(),
@@ -27,7 +28,9 @@ export const createListingSchema = z.object({
     return date > new Date();
   }, "Expiry date must be in the future"),
   quantity: z.number().int().positive("Quantity must be a positive integer"),
-  unit: z.string().min(1, "Unit is required"),
+  unit: z.string().min(1, "Form/Dosage is required"),
+  totalValue: z.number().positive().optional().nullable(),
+  storageCondition: z.string().optional().nullable(),
   pricePerUnit: z.number().positive("Price must be positive"),
   currency: z.string().default("EUR"),
   condition: z.enum(["SEALED", "OPENED"]).default("SEALED"),

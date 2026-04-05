@@ -25,9 +25,10 @@ export type {
 
 // ─── Extended types with relations ───────────────────────────────────────────
 
-// pricePerUnit is serialized to number (Prisma Decimal is not serializable to client components)
-export type ListingWithRelations = Omit<Listing, "pricePerUnit"> & {
+// pricePerUnit and totalValue are serialized to number (Prisma Decimal is not serializable to client components)
+export type ListingWithRelations = Omit<Listing, "pricePerUnit" | "totalValue"> & {
   pricePerUnit: number;
+  totalValue: number | null;
   hospital: Hospital;
   seller: Pick<User, "id" | "name" | "email" | "image">;
   category: Category | null;
@@ -46,13 +47,16 @@ export interface CreateListingInput {
   title: string;
   description?: string;
   medicineName: string;
-  genericName?: string;
+  genericName: string;
+  aicCode: string;
   atcCode?: string;
   manufacturer?: string;
   batchNumber?: string;
   expiryDate: string;        // ISO date string from form
   quantity: number;
   unit: string;
+  totalValue?: number | null;
+  storageCondition?: string | null;
   pricePerUnit: number;
   currency: string;
   condition: MedicineCondition;

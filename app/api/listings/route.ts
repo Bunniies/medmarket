@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
         ...rest,
         expiryDate: new Date(expiryDate),
         currency: rest.currency ?? "EUR",
+        remainingQuantity: rest.quantity,
         sellerId: userId,
         hospitalId,
       },

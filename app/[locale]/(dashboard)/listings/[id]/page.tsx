@@ -43,7 +43,11 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
   const t = await getTranslations("listingDetail");
   const tListings = await getTranslations("listings");
 
-  const typedListing: ListingWithRelations = { ...listing, pricePerUnit: Number(listing.pricePerUnit) };
+  const typedListing: ListingWithRelations = {
+    ...listing,
+    pricePerUnit: Number(listing.pricePerUnit),
+    totalValue: listing.totalValue ? Number(listing.totalValue) : null,
+  };
   const expiring = isExpiringSoon(listing.expiryDate);
   const expired = isExpired(listing.expiryDate);
 
@@ -95,8 +99,8 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         <dl className="grid gap-4 sm:grid-cols-2">
           <DetailRow
             icon={<Package className="h-4 w-4" />}
-            label={t("quantityAvailable")}
-            value={`${listing.quantity} ${listing.unit}`}
+            label={t("remainingQuantity")}
+            value={`${listing.remainingQuantity ?? listing.quantity} ${listing.unit}`}
           />
           <DetailRow
             icon={<Calendar className="h-4 w-4" />}
@@ -114,11 +118,32 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               value={listing.genericName}
             />
           )}
+          {listing.aicCode && (
+            <DetailRow
+              icon={<Hash className="h-4 w-4" />}
+              label={t("aicCode")}
+              value={listing.aicCode}
+            />
+          )}
           {listing.atcCode && (
             <DetailRow
               icon={<Hash className="h-4 w-4" />}
               label={t("atcCode")}
               value={listing.atcCode}
+            />
+          )}
+          {listing.storageCondition && (
+            <DetailRow
+              icon={<FlaskConical className="h-4 w-4" />}
+              label={t("storageCondition")}
+              value={listing.storageCondition}
+            />
+          )}
+          {listing.totalValue && (
+            <DetailRow
+              icon={<Package className="h-4 w-4" />}
+              label={t("totalValue")}
+              value={formatPrice(Number(listing.totalValue), listing.currency)}
             />
           )}
           {listing.manufacturer && (
